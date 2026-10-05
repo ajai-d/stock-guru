@@ -69,3 +69,30 @@ Baseline iteration of the Daily Stock Advisor (agentic app; specialization sdlc-
 - **Execution outcome:** SPEC-EXIT approved by the Human User. Spec complete and conformant.
 - **Artifact / path changed:** `spec/spec-Iteration-G2EXH7.md`
 - **Notes:** Approved interactively by the Human User (Interactive — SPEC stage). PLAN and EXECUTE proceed under Autopilot (entry 003).
+
+## 008
+- **Stage / task:** `plan/2a–2c`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T04:12:00Z
+- **Approval outcome:** Approved
+- **Execution outcome:** Plan drafted — §1 architecture (incl. §1.4 security: app-runtime managed identity + CI OIDC UAMI + identity-bootstrap; §1.5 agentic tech proposal = custom/direct Azure OpenAI gpt-4o-mini, Human User preferred framework None stated), §2 design (component + infra diagrams, UX, API), §3 work breakdown W-1..W-8 + sequencing DAG. Self-verified against baseline + agentic PLAN-EXIT checklists (eval work item present; identity-bootstrap first; eval-first edge W-5-agent→W-4-eval; each DIM traces to W-4-eval).
+- **Artifact / path changed:** `plan/plan-Iteration-G2EXH7.md`
+- **Notes:** Auto-approved under Autopilot (entry 003). First iteration — no prior plan to extend.
+
+## 009
+- **Stage / task:** `meta/execution-pattern`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T04:13:00Z
+- **Approval outcome:** Approved
+- **Execution outcome:** sequential selected
+- **Artifact / path changed:** —
+- **Notes:** Sequential selected under Autopilot (entry 003) as the conservative default; Parallel not selected (work items are largely dependency-chained per §3.2 DAG, and Parallel requires explicit opt-in). No concurrent `W-<n>` dispatch.
+
+## 010
+- **Stage / task:** `plan/2c`
+- **Approval gate:** `PLAN-EXIT`
+- **Timestamp (UTC):** 2026-10-05T04:14:00Z
+- **Approval outcome:** Approved
+- **Execution outcome:** PLAN-EXIT approved. Eight work items (W-1-identity-bootstrap first, W-4-eval present), Sequential, DAG recorded.
+- **Artifact / path changed:** `plan/plan-Iteration-G2EXH7.md`
+- **Notes:** Self-approved under Autopilot with attribution (entry 003). EXECUTE runs W-1..W-8 on short-lived branches + PRs (sdlc §9); the billable Azure identity-bootstrap (W-1) and first deploy are hard guardrails — the Agent stops and guides the Human User.
