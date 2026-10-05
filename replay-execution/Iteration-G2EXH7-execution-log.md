@@ -96,3 +96,21 @@ Baseline iteration of the Daily Stock Advisor (agentic app; specialization sdlc-
 - **Execution outcome:** PLAN-EXIT approved. Eight work items (W-1-identity-bootstrap first, W-4-eval present), Sequential, DAG recorded.
 - **Artifact / path changed:** `plan/plan-Iteration-G2EXH7.md`
 - **Notes:** Self-approved under Autopilot with attribution (entry 003). EXECUTE runs W-1..W-8 on short-lived branches + PRs (sdlc §9); the billable Azure identity-bootstrap (W-1) and first deploy are hard guardrails — the Agent stops and guides the Human User.
+
+## 011
+- **Stage / task:** `plan/2c`
+- **Approval gate:** `PLAN-EXIT`
+- **Timestamp (UTC):** 2026-10-05T05:05:00Z
+- **Approval outcome:** Approved with changes
+- **Execution outcome:** PLAN-EXIT re-verified. Correcting entry 010: the original PLAN-EXIT self-verification was incomplete — it asserted the plan-template diagram checklist (item 19) passed when it did not. A genuine item-by-item self-review (per the strengthened core pre-gate self-review rule) found required Mermaid diagrams MISSING in §1.2 (data-flow), §1.7 (operations), §2.2 (data `erDiagram`), and §2.5 (CI test-job); earlier §1.1/§1.3/§1.5/§1.6/§2.1/§2.3/§2.4/§2.6/§2.7/§3.2 were present. The plan was amended to add the four missing diagrams. Re-verification: all of §1.1–§2.7 and §3.2 now carry a `mermaid` block (17 blocks total; §2.1 has a `sequenceDiagram` per UC-1/UC-2/UC-3); §3.1 work-item map is optional and omitted. Fence balance even; 0 placeholders.
+- **Artifact / path changed:** `plan/plan-Iteration-G2EXH7.md`
+- **Notes:** Corrects entry 010 (false attestation of checklist pass). The plan artifact is now conformant to the plan-template PLAN-EXIT checklist item 19. This correction records the actual item-by-item verification result, as the strengthened core self-review rule now requires. No scope change to the plan's work items or sequencing.
+
+## 012
+- **Stage / task:** `meta/autopilot-enable`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T05:15:00Z
+- **Approval outcome:** Approved with changes
+- **Execution outcome:** autopilot enabled — scope expanded
+- **Artifact / path changed:** —
+- **Notes:** The Human User expanded the Autopilot scope for the remainder of EXECUTE to additionally cover the actions previously held as hard guardrails: billable Azure provisioning (the `W-1-identity-bootstrap` one-time apply, and all IaC resource creation — ACR, Azure OpenAI deployment, Log Analytics, Container Apps), GitHub Actions configuration, repo variables, and the first cloud deploy. Explicit in-session authorization: "go in autopilot mode for the rest; don't ask for any approvals for GH actions or infra; I give you permission to do all." The Agent will proceed without per-action approval, keeping every action logged with attribution, and will surface only a genuine unresolved blocker. Human anchor: in-session authorization committed to version control; attribution via commit authorship (no identifiable data per core §2).
