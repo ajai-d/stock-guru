@@ -142,7 +142,7 @@ sequenceDiagram
   reached via the app **managed identity** (no keys), per `config/cloud/azure.md`.
 - **Human User's preferred agentic framework(s):** Microsoft Agent Framework on
   Azure AI Foundry — adopted from the bound `agentic-stack` default
-  ([`sdlc-for-agentic-apps/config/agentic-stack/default.md`](../../promptless-agentic-sdlc/twtty/methodology/specialized-implementations/sdlc-for-agentic-apps/config/agentic-stack/default.md)).
+  ([`sdlc-for-agentic-apps/config/agentic-stack/default.md`](../../../promptless-agentic-sdlc/twtty/methodology/specialized-implementations/sdlc-for-agentic-apps/config/agentic-stack/default.md)).
 
 ```mermaid
 flowchart TB

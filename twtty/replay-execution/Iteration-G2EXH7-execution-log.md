@@ -126,3 +126,17 @@ Baseline iteration of the Daily Stock Advisor (agentic app; specialization sdlc-
   - `plan/plan-Iteration-G2EXH7.md` (§1.5)
   - `src/app/agent.py`, `requirements.txt`
 - **Notes:** The Human User introduced a new methodology config binding — `agentic-stack` (Microsoft Agent Framework on Azure AI Foundry, `gpt-4o-mini`) — in the `sdlc-for-agentic-apps` specialization. stock-guru adopts the bound default: `plan.md §1.5` refined from "none/custom direct SDK" to the bound stack; the agent (`src/app/agent.py`) now uses Microsoft Agent Framework (`agent_framework.azure.AzureOpenAIChatClient` + `create_agent`) with the app **managed identity** (no keys); `requirements.txt` swaps the raw `openai` SDK for `agent-framework`. The resolved stack is pinned in `twtty-runtime-config/runtimeconfig.md`. The `cloud` binding still governs how the model endpoint is auth'd. This refines plan §1.5 post-PLAN-EXIT per the Human User's direction (config-driven); work items and sequencing are unchanged.
+
+## 014
+- **Stage / task:** `meta/backfill`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T06:10:00Z
+- **Approval outcome:** Approved with changes
+- **Execution outcome:** Structural relocation — the non-execution TWTTY artifacts were moved from the repository root into `twtty/` to honor the plug-in layout (core §2 / sdlc §4). `seed/`, `spec/`, `plan/`, `replay-execution/`, and `twtty-runtime-config/` now live under `<project>/twtty/`; EXECUTE outputs (`src/`, `infra/`, `frontend/`, `tests/`, `data/`, `.github/`) remain at their natural repository locations.
+- **Artifact / path changed:**
+  - `twtty/seed/` (from `seed/`)
+  - `twtty/spec/` (from `spec/`)
+  - `twtty/plan/` (from `plan/`)
+  - `twtty/replay-execution/` (from `replay-execution/`)
+  - `twtty/twtty-runtime-config/` (from `twtty-runtime-config/`)
+- **Notes:** Corrects a first-contact blunder — the artifacts were wrongly placed at the repository root. The dispatcher rule (`twtty/twtty.md`) was fixed so `project=<folder>` always keeps non-execution artifacts under `<folder>/twtty/` (greenfield and brownfield alike). Prior entries reference the old root-relative paths as historically recorded (append-only); this entry documents the new locations. The `plan.md` methodology link depth was updated (`../../` → `../../../`). No change to work items, spec, or the app's behavior.
