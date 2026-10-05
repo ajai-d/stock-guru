@@ -128,16 +128,24 @@ def _top_up(recs: list[Recommendation], movers: list[Mover], profile: RiskProfil
 async def _run_agent(user_prompt: str) -> tuple[str, int, int]:
     """Run the Microsoft Agent Framework agent against the Azure AI Foundry /
     Azure OpenAI deployment using managed identity (no keys). Returns
-    (text, tokens_in, tokens_out)."""
-    from agent_framework.azure import AzureOpenAIChatClient
-    from azure.identity import DefaultAzureCredential
+    (text, tokens_in, tokens_out).
 
-    client = AzureOpenAIChatClient(
-        endpoint=config.AOAI_ENDPOINT,
-        deployment_name=config.AOAI_DEPLOYMENT,
-        api_version=config.AOAI_API_VERSION,
-        credential=DefaultAzureCredential(),
+    Uses `agent_framework.openai.OpenAIChatClient` wrapping a managed-identity
+    `AsyncAzureOpenAI` client — the current Agent Framework surface for Azure
+    OpenAI (the former `agent_framework.azure.AzureOpenAIChatClient` was removed)."""
+    from openai import AsyncAzureOpenAI
+    from azure.identity import DefaultAzureCredential, get_bearer_token_provider
+    from agent_framework.openai import OpenAIChatClient
+
+    token_provider = get_bearer_token_provider(
+        DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
     )
+    azure_openai = AsyncAzureOpenAI(
+        azure_endpoint=config.AOAI_ENDPOINT,
+        azure_ad_token_provider=token_provider,
+        api_version=config.AOAI_API_VERSION,
+    )
+    client = OpenAIChatClient(model=config.AOAI_DEPLOYMENT, async_client=azure_openai)
     agent = client.create_agent(instructions=_INSTRUCTIONS)
     response = await agent.run(user_prompt)
     text = getattr(response, "text", None) or str(response)
