@@ -1,5 +1,5 @@
 // infra/main.bicep — W-2 infrastructure (resource-group scope). Deployed by CI via OIDC.
-// Creates a NEW Azure OpenAI (Azure AI Foundry) account + gpt-4o-mini deployment, ACR,
+// Creates a NEW Azure OpenAI (Azure AI Foundry) account + gpt-4.1-mini deployment, ACR,
 // Log Analytics, Container Apps environment + app. Role assignments bind the app managed
 // identity to the model (OpenAI User) and registry (AcrPull). No keys anywhere.
 
@@ -10,8 +10,8 @@ param location string = resourceGroup().location
 param appName string = 'stock-guru'
 
 @description('Model deployment name + model.')
-param modelName string = 'gpt-4o-mini'
-param modelVersion string = '2024-07-18'
+param modelName string = 'gpt-4.1-mini'
+param modelVersion string = '2025-04-14'
 
 @description('Container image (CI passes the real ACR image; placeholder for first apply).')
 param image string = 'mcr.microsoft.com/k8se/quickstart:latest'
