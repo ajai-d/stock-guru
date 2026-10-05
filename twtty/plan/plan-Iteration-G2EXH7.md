@@ -132,12 +132,17 @@ sequenceDiagram
 
 - **Backend:** Python 3.12, FastAPI, Uvicorn/Gunicorn. **Frontend:** static
   HTML/CSS/vanilla-JS SPA (zero build step), served by the backend.
-- **Agentic technology proposal:** agent framework = none/custom (direct `openai`
-  SDK against Azure OpenAI with structured outputs + programmatic grounding/
-  schema enforcement); model = Azure OpenAI `gpt-4o-mini`; orchestration =
-  single-step; tool/MCP = minimal MCP server exposing T-1; eval/guardrail = custom
-  harness (deterministic scorers + one LLM-as-judge); skills = Impeccable (UI).
-- **Human User's preferred agentic framework(s):** None stated (Delegated).
+- **Agentic technology proposal (from the bound `agentic-stack`):** agent
+  framework = **Microsoft Agent Framework** (Python SDK; `agent_framework.azure.AzureOpenAIChatClient`
+  + `create_agent`); model platform = **Azure AI Foundry** (Azure OpenAI
+  deployment); model = **`gpt-4o-mini`**; orchestration = single-agent;
+  tool/MCP = minimal MCP server exposing T-1; eval/guardrail = custom harness
+  (deterministic scorers + one LLM-as-judge) with the framework's grounding/schema
+  enforcement applied post-response; skills = Impeccable (UI). The model is
+  reached via the app **managed identity** (no keys), per `config/cloud/azure.md`.
+- **Human User's preferred agentic framework(s):** Microsoft Agent Framework on
+  Azure AI Foundry — adopted from the bound `agentic-stack` default
+  ([`sdlc-for-agentic-apps/config/agentic-stack/default.md`](../../../promptless-agentic-sdlc/twtty/methodology/specialized-implementations/sdlc-for-agentic-apps/config/agentic-stack/default.md)).
 
 ```mermaid
 flowchart TB
@@ -146,7 +151,7 @@ flowchart TB
     end
     subgraph be["Backend - Python 3.12"]
         fast[FastAPI + Uvicorn/Gunicorn]:::t
-        sdk[openai SDK - structured outputs]:::t
+        sdk[Microsoft Agent Framework]:::t
         mcplib[MCP server]:::t
     end
     subgraph tooling["Eval + quality"]
@@ -154,9 +159,9 @@ flowchart TB
         judge[LLM-as-judge harness]:::t
         imp[Impeccable UX skill]:::t
     end
-    subgraph cloud["Azure"]
+    subgraph cloud["Azure AI Foundry + Azure"]
         aca[Container Apps]:::t
-        aoai[Azure OpenAI gpt-4o-mini]:::t
+        aoai[Foundry / Azure OpenAI gpt-4o-mini]:::t
     end
     html --> fast --> sdk --> aoai
     fast --> mcplib

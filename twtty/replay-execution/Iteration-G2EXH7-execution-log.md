@@ -114,3 +114,65 @@ Baseline iteration of the Daily Stock Advisor (agentic app; specialization sdlc-
 - **Execution outcome:** autopilot enabled — scope expanded
 - **Artifact / path changed:** —
 - **Notes:** The Human User expanded the Autopilot scope for the remainder of EXECUTE to additionally cover the actions previously held as hard guardrails: billable Azure provisioning (the `W-1-identity-bootstrap` one-time apply, and all IaC resource creation — ACR, Azure OpenAI deployment, Log Analytics, Container Apps), GitHub Actions configuration, repo variables, and the first cloud deploy. Explicit in-session authorization: "go in autopilot mode for the rest; don't ask for any approvals for GH actions or infra; I give you permission to do all." The Agent will proceed without per-action approval, keeping every action logged with attribution, and will surface only a genuine unresolved blocker. Human anchor: in-session authorization committed to version control; attribution via commit authorship (no identifiable data per core §2).
+
+## 013
+- **Stage / task:** `meta/config`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T05:45:00Z
+- **Approval outcome:** Approved with changes
+- **Execution outcome:** config resolved — agentic-stack binding adopted
+- **Artifact / path changed:**
+  - `twtty-runtime-config/runtimeconfig.md`
+  - `plan/plan-Iteration-G2EXH7.md` (§1.5)
+  - `src/app/agent.py`, `requirements.txt`
+- **Notes:** The Human User introduced a new methodology config binding — `agentic-stack` (Microsoft Agent Framework on Azure AI Foundry, `gpt-4o-mini`) — in the `sdlc-for-agentic-apps` specialization. stock-guru adopts the bound default: `plan.md §1.5` refined from "none/custom direct SDK" to the bound stack; the agent (`src/app/agent.py`) now uses Microsoft Agent Framework (`agent_framework.azure.AzureOpenAIChatClient` + `create_agent`) with the app **managed identity** (no keys); `requirements.txt` swaps the raw `openai` SDK for `agent-framework`. The resolved stack is pinned in `twtty-runtime-config/runtimeconfig.md`. The `cloud` binding still governs how the model endpoint is auth'd. This refines plan §1.5 post-PLAN-EXIT per the Human User's direction (config-driven); work items and sequencing are unchanged.
+
+## 014
+- **Stage / task:** `meta/backfill`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T06:10:00Z
+- **Approval outcome:** Approved with changes
+- **Execution outcome:** Structural relocation — the non-execution TWTTY artifacts were moved from the repository root into `twtty/` to honor the plug-in layout (core §2 / sdlc §4). `seed/`, `spec/`, `plan/`, `replay-execution/`, and `twtty-runtime-config/` now live under `<project>/twtty/`; EXECUTE outputs (`src/`, `infra/`, `frontend/`, `tests/`, `data/`, `.github/`) remain at their natural repository locations.
+- **Artifact / path changed:**
+  - `twtty/seed/` (from `seed/`)
+  - `twtty/spec/` (from `spec/`)
+  - `twtty/plan/` (from `plan/`)
+  - `twtty/replay-execution/` (from `replay-execution/`)
+  - `twtty/twtty-runtime-config/` (from `twtty-runtime-config/`)
+- **Notes:** Corrects a first-contact blunder — the artifacts were wrongly placed at the repository root. The dispatcher rule (`twtty/twtty.md`) was fixed so `project=<folder>` always keeps non-execution artifacts under `<folder>/twtty/` (greenfield and brownfield alike). Prior entries reference the old root-relative paths as historically recorded (append-only); this entry documents the new locations. The `plan.md` methodology link depth was updated (`../../` → `../../../`). No change to work items, spec, or the app's behavior.
+
+## 015
+- **Stage / task:** `execute/3b`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T05:48:30Z
+- **Approval outcome:** Approved
+- **Execution outcome:** App implemented on branch `build-app-and-deploy` — W-3-movers (T-1 MoversProvider + seed + MCP server), W-5-agent (T-2 on Microsoft Agent Framework, managed identity, grounding/schema/cost/safety enforcement + offline stub), W-6-api (FastAPI endpoints), W-7-ui (accessible SPA). Branch evidence: `br-build-app-and-deploy-002, -004, -005, -006`.
+- **Artifact / path changed:** `src/app/*.py`, `data/movers_seed.json`, `frontend/index.html`, `conftest.py`
+- **Notes:** Auto-approved under Autopilot (entry 003). Branch work recorded in the branch-scoped log (sdlc §8.1.2), not copied here. Backfilled entry — the build predates this record; recorded now for log fidelity.
+
+## 016
+- **Stage / task:** `execute/3f`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T05:55:30Z
+- **Approval outcome:** Approved
+- **Execution outcome:** W-4-eval (eval-first) + validation. Eval harness scores DIM-1..4; local run: DIM-1 100%, DIM-2 100%, DIM-3 100%, DIM-4 100%. 9/9 unit tests pass; safety pass. Per-recommendation cost metered+logged. Branch evidence: `br-build-app-and-deploy-003, -009`.
+- **Artifact / path changed:** `tests/**`
+- **Notes:** Satisfies AC-1..AC-9 locally; AC-10 (live deploy) pending integration. Agentic EXECUTE-EXIT conditions 7 (eval scores) + 8 (cost metering) evidence. Auto-approved under Autopilot. Backfilled.
+
+## 017
+- **Stage / task:** `execute/3h`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T05:56:00Z
+- **Approval outcome:** Approved
+- **Execution outcome:** W-2-infra — `infra/main.bicep`: NEW Azure OpenAI (Foundry) + `gpt-4o-mini`, ACR, Log Analytics, Container Apps + app identity + least-privilege role assignments (all in IaC). `az bicep build` exit 0. Branch evidence: `br-build-app-and-deploy-007`.
+- **Artifact / path changed:** `infra/main.bicep`
+- **Notes:** IaC-only; billable provisioning authorized (entry 012). Auto-approved under Autopilot. Backfilled.
+
+## 018
+- **Stage / task:** `execute/3g`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T05:56:30Z
+- **Approval outcome:** Approved
+- **Execution outcome:** W-8-cicd — Dockerfile + `.github/workflows/deploy.yml` (test+eval+safety → OIDC provision → ACR build → deploy → smoke). OIDC subject matches the `ref:refs/heads/main` federated credential (no `environment:` on the deploy job). Branch evidence: `br-build-app-and-deploy-008`.
+- **Artifact / path changed:** `Dockerfile`, `.dockerignore`, `.github/workflows/deploy.yml`
+- **Notes:** Auto-approved under Autopilot. Backfilled.

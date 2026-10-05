@@ -1,0 +1,74 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  RG: rg-stock-guru
+  LOCATION: eastus2
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test deps
+        run: pip install fastapi "uvicorn[standard]" pydantic httpx pytest
+      - name: Unit tests
+        run: pytest -q
+      - name: Evaluation (DIM-1..4)
+        run: python -m tests.eval.run --dataset tests/eval/data/cases.jsonl --out reports/eval/ci-${{ github.run_id }}.json
+      - name: Safety checks
+        run: python -m tests.safety.run
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC — no stored secrets)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Provision infrastructure (Bicep)
+        id: infra
+        uses: azure/arm-deploy@v2
+        with:
+          resourceGroupName: ${{ env.RG }}
+          template: infra/main.bicep
+          deploymentName: stock-guru-main-${{ github.run_id }}
+          failOnStdErr: false
+
+      - name: Build + push image in ACR
+        run: az acr build -r "${{ steps.infra.outputs.acrName }}" -t stock-guru:${{ github.sha }} .
+
+      - name: Deploy image to Container App
+        run: |
+          az containerapp update \
+            -n "${{ steps.infra.outputs.appResourceName }}" \
+            -g "${{ env.RG }}" \
+            --image "${{ steps.infra.outputs.acrLoginServer }}/stock-guru:${{ github.sha }}"
+
+      - name: Smoke test /healthz
+        run: |
+          FQDN="${{ steps.infra.outputs.appFqdn }}"
+          echo "app: https://$FQDN"
+          for i in 1 2 3 4 5 6 7 8; do
+            sleep 20
+            if curl -fsSL "https://$FQDN/healthz"; then echo " healthz ok"; break; fi
+            echo "waiting for app (attempt $i)..."
+          done
+          curl -fsSL "https://$FQDN/healthz"

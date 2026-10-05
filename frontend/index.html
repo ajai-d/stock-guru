@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Guru — Daily Stock Advisor</title>
+  <style>
+    :root {
+      --bg: #f7f8fa; --surface: #ffffff; --ink: #1b2430; --muted: #5b6676;
+      --accent: #1565c0; --accent-ink: #ffffff; --border: #e2e6ec;
+      --good: #2e7d32; --warn: #ef6c00; --bad: #c62828; --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+    }
+    header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10;
+    }
+    header h1 { font-size: 1.15rem; margin: 0; }
+    .disclaimer {
+      font-size: .8rem; color: var(--muted); background: #fff8e1;
+      border: 1px solid #ffe0a3; padding: 4px 10px; border-radius: 999px;
+    }
+    main { max-width: 980px; margin: 24px auto; padding: 0 20px;
+      display: grid; grid-template-columns: 300px 1fr; gap: 24px; }
+    @media (max-width: 760px) { main { grid-template-columns: 1fr; } }
+    .panel { background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px; }
+    fieldset { border: none; margin: 0 0 18px; padding: 0; }
+    legend { font-weight: 600; margin-bottom: 8px; }
+    label { display: flex; align-items: center; gap: 8px; margin: 6px 0; cursor: pointer; }
+    button {
+      background: var(--accent); color: var(--accent-ink); border: none;
+      border-radius: 8px; padding: 11px 16px; font-size: 1rem; font-weight: 600;
+      cursor: pointer; width: 100%;
+    }
+    button:disabled { opacity: .6; cursor: default; }
+    button:focus-visible, input:focus-visible, .card button:focus-visible {
+      outline: 3px solid #90caf9; outline-offset: 2px; }
+    .results { display: flex; flex-direction: column; gap: 12px; }
+    .card { background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 16px; }
+    .card .top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+    .ticker { font-weight: 700; font-size: 1.1rem; }
+    .rationale { color: var(--muted); margin: 6px 0 0; }
+    .meter { display: flex; align-items: center; gap: 8px; font-size: .85rem; color: var(--muted); }
+    .bar { width: 90px; height: 8px; background: #eceff3; border-radius: 999px; overflow: hidden; }
+    .bar > span { display: block; height: 100%; background: var(--good); }
+    details { margin-top: 8px; }
+    summary { cursor: pointer; color: var(--accent); font-size: .9rem; }
+    .src { font-size: .85rem; color: var(--muted); margin-top: 6px; }
+    .empty, .error { color: var(--muted); padding: 24px; text-align: center; }
+    .error { color: var(--bad); }
+    .skeleton { height: 70px; border-radius: var(--radius); background:
+      linear-gradient(90deg,#eceff3,#f6f8fa,#eceff3); background-size: 200% 100%;
+      animation: sh 1.2s infinite; }
+    @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📈 Stock Guru</h1>
+    <span class="disclaimer" role="note">This is not financial advice.</span>
+  </header>
+  <main>
+    <section class="panel" aria-label="Your profile">
+      <form id="profile-form">
+        <fieldset>
+          <legend>Risk tolerance</legend>
+          <label><input type="radio" name="risk" value="low" /> Low</label>
+          <label><input type="radio" name="risk" value="medium" checked /> Medium</label>
+          <label><input type="radio" name="risk" value="high" /> High</label>
+        </fieldset>
+        <fieldset id="sectors">
+          <legend>Sectors of interest</legend>
+        </fieldset>
+        <button type="submit" id="go">Get recommendations</button>
+      </form>
+    </section>
+    <section class="results" id="results" aria-live="polite">
+      <p class="empty">Set a profile and get your daily watchlist.</p>
+    </section>
+  </main>
+  <script>
+    const SECTORS = ["Technology","Financials","Energy","Healthcare",
+      "Consumer Discretionary","Consumer Staples","Communication Services","Industrials"];
+    const sx = document.getElementById("sectors");
+    SECTORS.forEach(s => {
+      const id = "sec-" + s.replace(/\s+/g, "-");
+      const l = document.createElement("label");
+      l.innerHTML = `<input type="checkbox" value="${s}" id="${id}" ${s==="Technology"?"checked":""}/> ${s}`;
+      sx.appendChild(l);
+    });
+    const results = document.getElementById("results");
+    const DISCLAIMER = "This is not financial advice.";
+
+    function meter(conf) {
+      const pct = Math.round(conf * 100);
+      return `<div class="meter">Confidence: ${conf.toFixed(2)}
+        <span class="bar" aria-hidden="true"><span style="width:${pct}%"></span></span></div>`;
+    }
+    function card(rec) {
+      return `<article class="card">
+        <div class="top"><span class="ticker">${rec.ticker}</span>${meter(rec.confidence)}</div>
+        <p class="rationale">${rec.rationale}</p>
+        <details><summary>Why this pick</summary>
+          <div class="src">${rec.rationale} Grounded in today's market movers.</div>
+        </details></article>`;
+    }
+    document.getElementById("profile-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const risk = document.querySelector('input[name="risk"]:checked').value;
+      const sectors = [...document.querySelectorAll('#sectors input:checked')].map(c => c.value);
+      const btn = document.getElementById("go");
+      btn.disabled = true;
+      results.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+      try {
+        const r = await fetch("/api/recommend", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ risk, sectors }),
+        });
+        if (!r.ok) throw new Error("status " + r.status);
+        const data = await r.json();
+        const cards = data.watchlist.map(card).join("");
+        results.innerHTML = cards +
+          `<p class="disclaimer" style="text-align:center">${data.disclaimer || DISCLAIMER}</p>`;
+      } catch (err) {
+        results.innerHTML = '<p class="error">Could not produce a grounded watchlist. Please try again.</p>';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
