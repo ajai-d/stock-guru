@@ -5,9 +5,9 @@ Derived snapshot (core §2). The replay-execution log is authoritative; this fil
 - **Active iteration:** Iteration-G2EXH7 (baseline)
 - **Specialization:** sdlc-for-agentic-apps (extends baseline sdlc)
 - **Risk level:** 2 (internal/prototype) + Azure cloud Runtime target
-- **Stage / gate position:** SEED complete (SEED-EXIT approved at entry 002)
-- **Execution mode:** Interactive (Autopilot not yet authorized)
-- **High-water sequence ID:** 002
+- **Stage / gate position:** SPEC complete (SPEC-EXIT approved at entry 007)
+- **Execution mode:** Autopilot for PLAN + EXECUTE (SPEC was Interactive); billable Azure ops hard-gated
+- **High-water sequence ID:** 007
 - **Open work items:** none yet (enumerated in PLAN)
-- **Reconciliation watermark:** entry 002
-- **Next action:** SPEC stage — 1a Discovery / config interview
+- **Reconciliation watermark:** entry 007
+- **Next action:** PLAN stage (Autopilot) — 2a Architecture / 2b Design / 2c Orchestration; identity-bootstrap work item first
