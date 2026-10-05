@@ -1,36 +1,35 @@
 # runtimeconfig — stock-guru
 
-Project-owned binding overrides / resolutions (sdlc §1.1; agentic addendum).
-Resolution is per attribute: a value listed here uses the local selection;
-anything absent inherits the methodology default.
+This file records **only the settings this project set explicitly**. Anything not listed here uses the
+TWTTY methodology default. The full resolved configuration (defaults + the entries below) is
+recorded in the iteration's `meta/config` replay-log entry.
+
+It has two parts:
+- **Overrides** — settings we changed from a methodology default, grouped by the
+  specialization `default-config.md` they override.
+- **Runtime** — settings chosen during a run that have no fixed default (e.g. the risk
+  level, set at SEED).
 
 ```yaml
-# Baseline bindings
-cloud: azure                       # Runtime target: Azure Container Apps + Azure AI Foundry
-risk-calibration: level-2          # confirmed at SEED (meta/risk-level)
-
-# Agentic specialization bindings
-agentic-stack: default             # Microsoft Agent Framework on Azure AI Foundry, gpt-4o-mini
-                                   # (sdlc-for-agentic-apps/config/agentic-stack/default.md)
-tokenomics:
-  product: bounded                 # per-request cost bounded + logged (spec §11)
-
-reusable-assets:
-  skills: impeccable               # UX skill for the dashboard
+specialization: sdlc-for-agentic-apps
 ```
 
-## Resolved agentic stack (pinned for reproducibility)
+## Overrides
 
-| Capability | Resolved value |
-|------------|----------------|
-| Agent framework / SDK | Microsoft Agent Framework (`agent_framework.azure.AzureOpenAIChatClient` + `create_agent`) |
-| Model platform | Azure AI Foundry (Azure OpenAI deployment) |
-| Model | `gpt-4o-mini` |
-| Model auth | app managed identity (no keys), per `config/cloud/azure.md` |
-| Orchestration | single-agent |
-| Tool ecosystem | MCP (`get_market_movers`) |
-| Eval / guardrails | custom harness (DIM-1..4) + post-response grounding/schema enforcement |
+### sdlc-for-agentic-apps — overrides `sdlc-for-agentic-apps/config/default-config.md`
 
-The project adopts the bound `agentic-stack` default unchanged; this file records
-the resolution so the iteration is reproducible (the `meta/config` replay entry
-pins it in the log).
+```yaml
+tokenomics:
+  product: bounded     # per-request cost bounded + logged; the ceilings and degradation
+                       # policy are defined in spec §11 (the gate).
+                       # Default: product-profile1.md — all caps none.
+```
+
+## Runtime
+
+Selected during the run; no fixed default.
+
+```yaml
+risk-level: level-2    # assessed/selected at SEED (meta/risk-level); floor L1.
+                       # The risk-calibration ladder file itself is inherited.
+```
