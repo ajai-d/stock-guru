@@ -114,3 +114,15 @@ Baseline iteration of the Daily Stock Advisor (agentic app; specialization sdlc-
 - **Execution outcome:** autopilot enabled — scope expanded
 - **Artifact / path changed:** —
 - **Notes:** The Human User expanded the Autopilot scope for the remainder of EXECUTE to additionally cover the actions previously held as hard guardrails: billable Azure provisioning (the `W-1-identity-bootstrap` one-time apply, and all IaC resource creation — ACR, Azure OpenAI deployment, Log Analytics, Container Apps), GitHub Actions configuration, repo variables, and the first cloud deploy. Explicit in-session authorization: "go in autopilot mode for the rest; don't ask for any approvals for GH actions or infra; I give you permission to do all." The Agent will proceed without per-action approval, keeping every action logged with attribution, and will surface only a genuine unresolved blocker. Human anchor: in-session authorization committed to version control; attribution via commit authorship (no identifiable data per core §2).
+
+## 013
+- **Stage / task:** `meta/config`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T05:45:00Z
+- **Approval outcome:** Approved with changes
+- **Execution outcome:** config resolved — agentic-stack binding adopted
+- **Artifact / path changed:**
+  - `twtty-runtime-config/runtimeconfig.md`
+  - `plan/plan-Iteration-G2EXH7.md` (§1.5)
+  - `src/app/agent.py`, `requirements.txt`
+- **Notes:** The Human User introduced a new methodology config binding — `agentic-stack` (Microsoft Agent Framework on Azure AI Foundry, `gpt-4o-mini`) — in the `sdlc-for-agentic-apps` specialization. stock-guru adopts the bound default: `plan.md §1.5` refined from "none/custom direct SDK" to the bound stack; the agent (`src/app/agent.py`) now uses Microsoft Agent Framework (`agent_framework.azure.AzureOpenAIChatClient` + `create_agent`) with the app **managed identity** (no keys); `requirements.txt` swaps the raw `openai` SDK for `agent-framework`. The resolved stack is pinned in `twtty-runtime-config/runtimeconfig.md`. The `cloud` binding still governs how the model endpoint is auth'd. This refines plan §1.5 post-PLAN-EXIT per the Human User's direction (config-driven); work items and sequencing are unchanged.
