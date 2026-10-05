@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
@@ -8,6 +9,8 @@ from . import agent as agent_mod
 from .mcp_server import get_movers
 from .models import RiskProfile, Watchlist
 from .movers import default_provider
+
+logger = logging.getLogger("stock_guru")
 
 app = FastAPI(title="Stock Guru", version="1.0.0")
 
@@ -37,6 +40,7 @@ def api_recommend(profile: RiskProfile) -> dict:
     except agent_mod.InsufficientCandidates:
         raise HTTPException(status_code=503, detail="insufficient_candidates")
     except Exception:
+        logger.exception("recommend failed")
         raise HTTPException(status_code=503, detail="model_unavailable")
     return result.model_dump()
 
