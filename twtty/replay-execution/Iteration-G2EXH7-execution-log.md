@@ -176,3 +176,25 @@ Baseline iteration of the Daily Stock Advisor (agentic app; specialization sdlc-
 - **Execution outcome:** W-8-cicd — Dockerfile + `.github/workflows/deploy.yml` (test+eval+safety → OIDC provision → ACR build → deploy → smoke). OIDC subject matches the `ref:refs/heads/main` federated credential (no `environment:` on the deploy job). Branch evidence: `br-build-app-and-deploy-008`.
 - **Artifact / path changed:** `Dockerfile`, `.dockerignore`, `.github/workflows/deploy.yml`
 - **Notes:** Auto-approved under Autopilot. Backfilled.
+
+## 019
+- **Stage / task:** `meta/branch-integrated`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T15:40:00Z
+- **Approval outcome:** Approved
+- **Execution outcome:** Merged `build-app-and-deploy` → `main` (PR #2), triggering the live deploy. Four real-world drift issues surfaced and were fixed via successive PRs (Autopilot, Human User authorized live deploy entry 012):
+  1. **Model version deprecated** — `gpt-4o-mini:2024-07-18` is blocked for *new* Azure OpenAI deployments (and eastus2 has no newer `gpt-4o-mini` chat version), failing Bicep preflight. Repinned to `gpt-4.1-mini:2025-04-14` (PR #3).
+  2. **Provisioning gating** — the pipeline re-provisioned on every push. Restructured `deploy.yml` into `test → changes → provision → deploy`: provision runs only when `infra/**` changes (or manual `force_provision`); the app deploy runs every commit and discovers resource names from Azure (PR #3). Subsequent app-only deploys correctly **skip** provision.
+  3. **Dependency conflict** — `agent-framework` (meta `[all]`) requires `mcp>=1.24` (→ `pydantic>=2.11`) and `fastapi>=0.121`, conflicting with the exact pins → pip `ResolutionImpossible`. Switched to lean `agent-framework-core` + `agent-framework-openai` and relaxed pins to resolvable ranges (PR #4).
+  4. **Agent Framework API drift** — `agent_framework.azure.AzureOpenAIChatClient` was removed; there is no `create_agent` method. Ported `_run_agent` to `agent_framework.openai.OpenAIChatCompletionClient` (Chat Completions, compatible with the configured api-version) wrapping a managed-identity `AsyncAzureOpenAI`, with the agent built via `agent_framework.Agent(client=...)` (PRs #4–#6). Added exception logging to the `/api/recommend` handler.
+- **Artifact / path changed:** `infra/main.bicep`, `.github/workflows/deploy.yml`, `requirements.txt`, `src/app/agent.py`, `src/app/main.py`, `.gitignore`
+- **Notes:** Each fix was also carried into the TWTTY methodology (promptless-agentic-sdlc): provisioning/app-deploy decoupling in `cloud/azure.md`; model-version + SDK-API deploy-time verification (and default model → `gpt-4.1-mini`) in `agentic-stack/default.md`.
+
+## 020
+- **Stage / task:** `execute/3m`
+- **Approval gate:** EXECUTE-EXIT
+- **Timestamp (UTC):** 2026-10-05T15:42:00Z
+- **Approval outcome:** Approved
+- **Execution outcome:** Live deployment verified (AC-10). CI run green with `provision` **skipped** (app-only change), confirming the gating. Container App live: `GET /healthz` → `{"status":"ok"}`; `POST /api/recommend` returns a grounded 3–5 item watchlist from **Azure OpenAI `gpt-4.1-mini` via Microsoft Agent Framework** (app managed identity, no keys) — tickers strictly from the day's movers, per-item rationale + confidence, "not financial advice" disclaimer present. Grounding/schema/cost/safety enforcement held on live output.
+- **Artifact / path changed:** — (deployed revision; no source change)
+- **Notes:** Satisfies spec AC-1..AC-10. Agentic EXECUTE-EXIT conditions met (eval scores, cost metering, safety, live deploy). Model endpoint reached keyless via the app UAMI with `Cognitive Services OpenAI User` on the AOAI account (all in IaC).
