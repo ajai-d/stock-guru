@@ -137,6 +137,7 @@ async def _run_agent(user_prompt: str) -> tuple[str, int, int]:
     `AOAI_API_VERSION`)."""
     from openai import AsyncAzureOpenAI
     from azure.identity import DefaultAzureCredential, get_bearer_token_provider
+    from agent_framework import Agent
     from agent_framework.openai import OpenAIChatCompletionClient
 
     token_provider = get_bearer_token_provider(
@@ -150,7 +151,7 @@ async def _run_agent(user_prompt: str) -> tuple[str, int, int]:
     client = OpenAIChatCompletionClient(
         model=config.AOAI_DEPLOYMENT, async_client=azure_openai
     )
-    agent = client.create_agent(instructions=_INSTRUCTIONS)
+    agent = Agent(client=client, name="stock-guru", instructions=_INSTRUCTIONS)
     response = await agent.run(user_prompt)
     text = getattr(response, "text", None) or str(response)
     usage = getattr(response, "usage_details", None) or getattr(response, "usage", None)
