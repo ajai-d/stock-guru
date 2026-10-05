@@ -130,12 +130,14 @@ async def _run_agent(user_prompt: str) -> tuple[str, int, int]:
     Azure OpenAI deployment using managed identity (no keys). Returns
     (text, tokens_in, tokens_out).
 
-    Uses `agent_framework.openai.OpenAIChatClient` wrapping a managed-identity
-    `AsyncAzureOpenAI` client — the current Agent Framework surface for Azure
-    OpenAI (the former `agent_framework.azure.AzureOpenAIChatClient` was removed)."""
+    Uses `agent_framework.openai.OpenAIChatCompletionClient` wrapping a
+    managed-identity `AsyncAzureOpenAI` client — the current Agent Framework
+    surface for Azure OpenAI (the former `agent_framework.azure.AzureOpenAIChatClient`
+    was removed). Chat Completions is used (compatible with the configured
+    `AOAI_API_VERSION`)."""
     from openai import AsyncAzureOpenAI
     from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-    from agent_framework.openai import OpenAIChatClient
+    from agent_framework.openai import OpenAIChatCompletionClient
 
     token_provider = get_bearer_token_provider(
         DefaultAzureCredential(), "https://cognitiveservices.azure.com/.default"
@@ -145,7 +147,9 @@ async def _run_agent(user_prompt: str) -> tuple[str, int, int]:
         azure_ad_token_provider=token_provider,
         api_version=config.AOAI_API_VERSION,
     )
-    client = OpenAIChatClient(model=config.AOAI_DEPLOYMENT, async_client=azure_openai)
+    client = OpenAIChatCompletionClient(
+        model=config.AOAI_DEPLOYMENT, async_client=azure_openai
+    )
     agent = client.create_agent(instructions=_INSTRUCTIONS)
     response = await agent.run(user_prompt)
     text = getattr(response, "text", None) or str(response)
