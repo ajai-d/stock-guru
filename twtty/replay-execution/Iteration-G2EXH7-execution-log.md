@@ -140,3 +140,39 @@ Baseline iteration of the Daily Stock Advisor (agentic app; specialization sdlc-
   - `twtty/replay-execution/` (from `replay-execution/`)
   - `twtty/twtty-runtime-config/` (from `twtty-runtime-config/`)
 - **Notes:** Corrects a first-contact blunder — the artifacts were wrongly placed at the repository root. The dispatcher rule (`twtty/twtty.md`) was fixed so `project=<folder>` always keeps non-execution artifacts under `<folder>/twtty/` (greenfield and brownfield alike). Prior entries reference the old root-relative paths as historically recorded (append-only); this entry documents the new locations. The `plan.md` methodology link depth was updated (`../../` → `../../../`). No change to work items, spec, or the app's behavior.
+
+## 015
+- **Stage / task:** `execute/3b`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T05:48:30Z
+- **Approval outcome:** Approved
+- **Execution outcome:** App implemented on branch `build-app-and-deploy` — W-3-movers (T-1 MoversProvider + seed + MCP server), W-5-agent (T-2 on Microsoft Agent Framework, managed identity, grounding/schema/cost/safety enforcement + offline stub), W-6-api (FastAPI endpoints), W-7-ui (accessible SPA). Branch evidence: `br-build-app-and-deploy-002, -004, -005, -006`.
+- **Artifact / path changed:** `src/app/*.py`, `data/movers_seed.json`, `frontend/index.html`, `conftest.py`
+- **Notes:** Auto-approved under Autopilot (entry 003). Branch work recorded in the branch-scoped log (sdlc §8.1.2), not copied here. Backfilled entry — the build predates this record; recorded now for log fidelity.
+
+## 016
+- **Stage / task:** `execute/3f`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T05:55:30Z
+- **Approval outcome:** Approved
+- **Execution outcome:** W-4-eval (eval-first) + validation. Eval harness scores DIM-1..4; local run: DIM-1 100%, DIM-2 100%, DIM-3 100%, DIM-4 100%. 9/9 unit tests pass; safety pass. Per-recommendation cost metered+logged. Branch evidence: `br-build-app-and-deploy-003, -009`.
+- **Artifact / path changed:** `tests/**`
+- **Notes:** Satisfies AC-1..AC-9 locally; AC-10 (live deploy) pending integration. Agentic EXECUTE-EXIT conditions 7 (eval scores) + 8 (cost metering) evidence. Auto-approved under Autopilot. Backfilled.
+
+## 017
+- **Stage / task:** `execute/3h`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T05:56:00Z
+- **Approval outcome:** Approved
+- **Execution outcome:** W-2-infra — `infra/main.bicep`: NEW Azure OpenAI (Foundry) + `gpt-4o-mini`, ACR, Log Analytics, Container Apps + app identity + least-privilege role assignments (all in IaC). `az bicep build` exit 0. Branch evidence: `br-build-app-and-deploy-007`.
+- **Artifact / path changed:** `infra/main.bicep`
+- **Notes:** IaC-only; billable provisioning authorized (entry 012). Auto-approved under Autopilot. Backfilled.
+
+## 018
+- **Stage / task:** `execute/3g`
+- **Approval gate:** —
+- **Timestamp (UTC):** 2026-10-05T05:56:30Z
+- **Approval outcome:** Approved
+- **Execution outcome:** W-8-cicd — Dockerfile + `.github/workflows/deploy.yml` (test+eval+safety → OIDC provision → ACR build → deploy → smoke). OIDC subject matches the `ref:refs/heads/main` federated credential (no `environment:` on the deploy job). Branch evidence: `br-build-app-and-deploy-008`.
+- **Artifact / path changed:** `Dockerfile`, `.dockerignore`, `.github/workflows/deploy.yml`
+- **Notes:** Auto-approved under Autopilot. Backfilled.
